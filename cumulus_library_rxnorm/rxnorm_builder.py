@@ -1,12 +1,12 @@
 import pathlib
 
 import pandas
-from cumulus_library import base_table_builder, base_utils, study_manifest
+from cumulus_library import BaseTableBuilder, base_utils, study_manifest
 from cumulus_library.apis import umls
 from cumulus_library.template_sql import base_templates
 
 
-class RxNormBuilder(base_table_builder.BaseTableBuilder):
+class RxNormBuilder(BaseTableBuilder):
     def rmtree(self, root: pathlib.Path):
         """Deletes a dir and all files underneath
 
@@ -184,7 +184,7 @@ class RxNormBuilder(base_table_builder.BaseTableBuilder):
                 with open(file) as f:
                     datasource, table = self.parse_ctl_file(f.readlines())
                     progress.update(task, description=f"Compressing {datasource}...")
-                    rrf_path = download_path / f"./{folder}/scripts/oracle/{datasource}"
+                    rrf_path = download_path / f"./{folder}/rrf/{datasource}"
                     self.create_parquet(
                         rrf_path, parquet_path, table, config
                     )

@@ -1,9 +1,9 @@
 [project]
-version = "0.2.0"
-name = "cumulus-library-umls"
-requires-python = ">= 3.10"
+version = "1.0"
+name = "cumulus-library-rxnorm"
+requires-python = ">= 3.11"
 dependencies = [
-    "cumulus-library >= 2.3",
+    "cumulus-library >= 3",
 ]
 description = "A Unified Medical Language System® Metathesaurus study for the Cumulus project"
 readme = "README.md"
@@ -28,7 +28,7 @@ test = [
 [project.urls]
 Home = "https://smarthealthit.org/cumulus"
 Documentation = "https://docs.smarthealthit.org/cumulus/"
-Source = "https://github.com/smart-on-fhir/cumulus-library-umls"
+Source = "https://github.com/smart-on-fhir/cumulus-library-rxnorm"
 
 [build-system]
 requires = ["flit_core >=3.4,<4"]
