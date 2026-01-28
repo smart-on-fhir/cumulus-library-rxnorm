@@ -3,9 +3,9 @@ version = "1.0"
 name = "cumulus-library-rxnorm"
 requires-python = ">= 3.11"
 dependencies = [
-    "cumulus-library >= 3",
+    "cumulus-library >= 4.1, <7.0",
 ]
-description = "A Unified Medical Language System® Metathesaurus study for the Cumulus project"
+description = "A RxNorm study for the Cumulus project"
 readme = "README.md"
 license = { text="Apache License 2.0" }
 keywords = ["FHIR", "SQL", "Health Informatics"]
