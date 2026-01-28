@@ -1,6 +1,6 @@
 study_prefix = "rxnorm"
 
-[table_builder_config]
+[file_config]
 file_names = [
     "rxnorm_builder.py"
 ]
