@@ -1,7 +1,7 @@
 study_prefix = "rxnorm"
 
-[file_config]
-file_names = [
+[[stages.default]]
+files = [
     "rxnorm_builder.py"
 ]
 
