@@ -4,7 +4,7 @@ from unittest import mock
 import pytest
 import responses
 from cumulus_library import base_utils, databases, db_config, study_manifest
-from rxnorm import rxnorm_builder
+from cumulus_library_rxnorm import rxnorm_builder
 
 AUTH_URL = "https://utslogin.nlm.nih.gov/validateUser"
 RELEASE_URL = "https://uts-ws.nlm.nih.gov/releases"
@@ -68,6 +68,7 @@ def test_create_query(mock_resolve, mock_responses, tmp_path):
         "advanced_options": {"dedicated_schema": "rxnorm"},
     }
     builder = rxnorm_builder.RxNormBuilder()
+    config.db.connect()
     builder.prepare_queries(config=config, manifest=manifest)
     print(builder.queries)
     expected = f"""CREATE TABLE IF NOT EXISTS rxnorm__TESTTABLE AS SELECT
@@ -103,6 +104,7 @@ def test_create_query_download_exists(mock_resolve, mock_responses, tmp_path):
         "advanced_options": {"dedicated_schema": "rxnorm"},
     }
     builder = rxnorm_builder.RxNormBuilder()
+    config.db.connect()
     builder.prepare_queries(config=config, manifest=manifest)
     download_dirs = sorted((tmp_path / "downloads").iterdir())
     assert len(download_dirs) == 1
