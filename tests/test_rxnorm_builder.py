@@ -15,7 +15,7 @@ DOWNLOAD_URL = "https://uts-ws.nlm.nih.gov/download"
 @pytest.fixture
 def mock_responses():
     with responses.RequestsMock(assert_all_requests_are_fired=False) as response:
-        with open("./tests/test_data/RxNorm_full_01012000.zip", "rb") as download_zip:
+        with open("./tests/test_data/RxNorm_Full_01012000.zip", "rb") as download_zip:
             response.add(
                 responses.GET,
                 AUTH_URL,
