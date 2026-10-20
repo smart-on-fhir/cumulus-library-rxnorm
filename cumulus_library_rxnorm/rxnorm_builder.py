@@ -64,11 +64,13 @@ class RxNormBuilder(BaseTableBuilder):
                 target="rxnorm-full-monthly-release", path=download_path, unzip=False
             )
             base_utils.unzip_file(
-                download_path / metadata["fileName"], 
-                download_path / metadata["releaseVersion"]
-                )
+                download_path / metadata["fileName"],
+                download_path / metadata["releaseVersion"],
+            )
             (download_path / metadata["fileName"]).unlink()
-        files = list(download_path.glob(f'./{metadata["releaseVersion"]}/scripts/oracle/*.ctl'))
+        files = list(
+            download_path.glob(f"./{metadata['releaseVersion']}/scripts/oracle/*.ctl")
+        )
         return files, download_required, metadata["releaseVersion"]
 
     def sql_type_to_df_parquet_type(self, text: str) -> str:
@@ -116,10 +118,10 @@ class RxNormBuilder(BaseTableBuilder):
                 if line is not None:
                     line = line.strip().split("\t")
                     # Some files in RxNorm ctls are formatted differently
-                    # (i.e. space deliniated, extra whitespace), so we 
+                    # (i.e. space deliniated, extra whitespace), so we
                     # do some sanity checking here.
                     if len(line) == 1:
-                        if len(line[0]) ==0:
+                        if len(line[0]) == 0:
                             continue
                         else:
                             line = line[0].split()
@@ -134,7 +136,7 @@ class RxNormBuilder(BaseTableBuilder):
         rrf_path: pathlib.Path,
         parquet_path: pathlib.Path,
         table: dict[list],
-        config:base_utils.StudyConfig,
+        config: base_utils.StudyConfig,
     ):
         """Creates a parquet file from a .rrf metathesaurus file
 
@@ -160,7 +162,7 @@ class RxNormBuilder(BaseTableBuilder):
 
     def prepare_queries(
         self,
-        config:base_utils.StudyConfig,
+        config: base_utils.StudyConfig,
         manifest: study_manifest.StudyManifest,
         *args,
         **kwargs,
@@ -174,7 +176,7 @@ class RxNormBuilder(BaseTableBuilder):
         )
         parquet_path = parquet_path / folder
         parquet_path.mkdir(exist_ok=True, parents=True)
-        schema = base_utils.get_schema(config,manifest)
+        schema = base_utils.get_schema(config, manifest)
         with base_utils.get_progress_bar() as progress:
             task = progress.add_task(
                 None,
@@ -185,9 +187,7 @@ class RxNormBuilder(BaseTableBuilder):
                     datasource, table = self.parse_ctl_file(f.readlines())
                     progress.update(task, description=f"Compressing {datasource}...")
                     rrf_path = download_path / f"./{folder}/rrf/{datasource}"
-                    self.create_parquet(
-                        rrf_path, parquet_path, table, config
-                    )
+                    self.create_parquet(rrf_path, parquet_path, table, config)
                     progress.update(task, description=f"Uploading {datasource}...")
                     remote_path = config.db.upload_file(
                         file=parquet_path / f"{file.stem}/{file.stem}.parquet",

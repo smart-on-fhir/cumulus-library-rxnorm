@@ -4,7 +4,6 @@ from unittest import mock
 import pytest
 import responses
 from cumulus_library import base_utils, databases, db_config, study_manifest
-
 from rxnorm import rxnorm_builder
 
 AUTH_URL = "https://utslogin.nlm.nih.gov/validateUser"
@@ -26,7 +25,6 @@ def mock_responses():
             response.add(
                 responses.GET,
                 RELEASE_URL,
-
                 body="""[{
                     "fileName": "RxNorm_full_01012000.zip",
                     "releaseVersion": "2000-01-01",
@@ -60,12 +58,14 @@ def test_create_query(mock_resolve, mock_responses, tmp_path):
 
     db_config.db_type = "duckdb"
     config = base_utils.StudyConfig(
-        db=databases.DuckDatabaseBackend(f"{tmp_path}/duckdb"), umls_key="123", schema='test'
+        db=databases.DuckDatabaseBackend(f"{tmp_path}/duckdb"),
+        umls_key="123",
+        schema="test",
     )
     manifest = study_manifest.StudyManifest()
     manifest._study_config = {
-        'study_prefix': 'rxnorm',  
-        'advanced_options': {'dedicated_schema': 'rxnorm'}
+        "study_prefix": "rxnorm",
+        "advanced_options": {"dedicated_schema": "rxnorm"},
     }
     builder = rxnorm_builder.RxNormBuilder()
     builder.prepare_queries(config=config, manifest=manifest)
@@ -73,9 +73,7 @@ def test_create_query(mock_resolve, mock_responses, tmp_path):
     expected = f"""CREATE TABLE IF NOT EXISTS rxnorm__TESTTABLE AS SELECT
     TTY,
     CODE
-FROM read_parquet('{
-        tmp_path / "generated_parquet/2000-01-01"
-    }/TESTTABLE/*.parquet')"""
+FROM read_parquet('{tmp_path / "generated_parquet/2000-01-01"}/TESTTABLE/*.parquet')"""
     assert expected == builder.queries[0]
 
 
@@ -95,12 +93,14 @@ def test_create_query_download_exists(mock_resolve, mock_responses, tmp_path):
 
     db_config.db_type = "duckdb"
     config = base_utils.StudyConfig(
-        db=databases.DuckDatabaseBackend(f"{tmp_path}/duckdb"), umls_key="123", schema='test'
+        db=databases.DuckDatabaseBackend(f"{tmp_path}/duckdb"),
+        umls_key="123",
+        schema="test",
     )
     manifest = study_manifest.StudyManifest()
     manifest._study_config = {
-        'study_prefix': 'rxnorm',  
-        'advanced_options': {'dedicated_schema': 'rxnorm'}
+        "study_prefix": "rxnorm",
+        "advanced_options": {"dedicated_schema": "rxnorm"},
     }
     builder = rxnorm_builder.RxNormBuilder()
     builder.prepare_queries(config=config, manifest=manifest)
