@@ -74,7 +74,8 @@ def test_create_query(mock_resolve, mock_responses, tmp_path):
     print(builder.queries)
     expected_dir = tmp_path / "generated_parquet/2000-01-01/TESTTABLE/"
     expected = (
-        'CREATE TABLE IF NOT EXISTS "rxnorm"."rxnorm__TESTTABLE" AS SELECT "TTY", "CODE"\n'
+        'CREATE TABLE IF NOT EXISTS "rxnorm"."rxnorm__TESTTABLE"'
+        ' AS SELECT "TTY", "CODE"\n'
         f"FROM read_parquet('{expected_dir}/*.parquet')"
     )
     assert expected == builder.queries[0]
