@@ -1,7 +1,7 @@
 [project]
-version = "1.0"
 name = "cumulus-library-rxnorm"
 requires-python = ">= 3.11"
+dynamic=["version"]
 dependencies = [
     "cumulus-library >= 6, <7.0",
 ]
