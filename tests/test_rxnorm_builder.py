@@ -5,7 +5,7 @@ import pytest
 import responses
 from cumulus_library import base_utils, databases, db_config, study_manifest
 
-from rxnorm import rxnorm_builder
+from cumulus_library_rxnorm import rxnorm_builder
 
 AUTH_URL = "https://utslogin.nlm.nih.gov/validateUser"
 RELEASE_URL = "https://uts-ws.nlm.nih.gov/releases"
@@ -15,7 +15,7 @@ DOWNLOAD_URL = "https://uts-ws.nlm.nih.gov/download"
 @pytest.fixture
 def mock_responses():
     with responses.RequestsMock(assert_all_requests_are_fired=False) as response:
-        with open("./tests/test_data/RxNorm_full_01012000.zip", "rb") as download_zip:
+        with open("./tests/test_data/RxNorm_Full_01012000.zip", "rb") as download_zip:
             response.add(
                 responses.GET,
                 AUTH_URL,
@@ -26,7 +26,6 @@ def mock_responses():
             response.add(
                 responses.GET,
                 RELEASE_URL,
-
                 body="""[{
                     "fileName": "RxNorm_full_01012000.zip",
                     "releaseVersion": "2000-01-01",
@@ -60,22 +59,25 @@ def test_create_query(mock_resolve, mock_responses, tmp_path):
 
     db_config.db_type = "duckdb"
     config = base_utils.StudyConfig(
-        db=databases.DuckDatabaseBackend(f"{tmp_path}/duckdb"), umls_key="123", schema='test'
+        db=databases.DuckDatabaseBackend(f"{tmp_path}/duckdb"),
+        umls_key="123",
+        schema="test",
     )
     manifest = study_manifest.StudyManifest()
     manifest._study_config = {
-        'study_prefix': 'rxnorm',  
-        'advanced_options': {'dedicated_schema': 'rxnorm'}
+        "study_prefix": "rxnorm",
+        "advanced_options": {"dedicated_schema": "rxnorm"},
     }
     builder = rxnorm_builder.RxNormBuilder()
+    config.db.connect()
     builder.prepare_queries(config=config, manifest=manifest)
     print(builder.queries)
-    expected = f"""CREATE TABLE IF NOT EXISTS rxnorm__TESTTABLE AS SELECT
-    TTY,
-    CODE
-FROM read_parquet('{
-        tmp_path / "generated_parquet/2000-01-01"
-    }/TESTTABLE/*.parquet')"""
+    expected_dir = tmp_path / "generated_parquet/2000-01-01/TESTTABLE/"
+    expected = (
+        'CREATE TABLE IF NOT EXISTS "rxnorm"."rxnorm__TESTTABLE"'
+        ' AS SELECT "TTY", "CODE"\n'
+        f"FROM read_parquet('{expected_dir}/*.parquet')"
+    )
     assert expected == builder.queries[0]
 
 
@@ -95,14 +97,17 @@ def test_create_query_download_exists(mock_resolve, mock_responses, tmp_path):
 
     db_config.db_type = "duckdb"
     config = base_utils.StudyConfig(
-        db=databases.DuckDatabaseBackend(f"{tmp_path}/duckdb"), umls_key="123", schema='test'
+        db=databases.DuckDatabaseBackend(f"{tmp_path}/duckdb"),
+        umls_key="123",
+        schema="test",
     )
     manifest = study_manifest.StudyManifest()
     manifest._study_config = {
-        'study_prefix': 'rxnorm',  
-        'advanced_options': {'dedicated_schema': 'rxnorm'}
+        "study_prefix": "rxnorm",
+        "advanced_options": {"dedicated_schema": "rxnorm"},
     }
     builder = rxnorm_builder.RxNormBuilder()
+    config.db.connect()
     builder.prepare_queries(config=config, manifest=manifest)
     download_dirs = sorted((tmp_path / "downloads").iterdir())
     assert len(download_dirs) == 1
